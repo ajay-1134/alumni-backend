@@ -7,6 +7,7 @@ import (
 	"github.com/ajay-1134/alumni-backend/internal/service"
 	"github.com/ajay-1134/alumni-backend/pkg/db"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 )
 
 type Builder struct {
@@ -21,12 +22,19 @@ func (b *Builder) Build(dsn string) *gin.Engine {
 	database := db.ConnnectDB(dsn)
 
 	userRepository := repository.NewUserRepository(database)
+	userService := service.NewUserService(userRepository)
+	userHandler := handler.NewUserHandler(userService)
 
-	UserService := service.NewUserService(userRepository)
+	// apply CORS before routes
+	b.router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "PATCH", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+	}))
 
-	UserHandler := handler.NewUserHandler(UserService)
-
-	router.SetupRoutes(b.router, UserHandler)
+	// now set up routes
+	router.SetupRoutes(b.router, userHandler)
 
 	return b.router
 }

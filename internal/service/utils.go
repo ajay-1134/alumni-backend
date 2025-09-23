@@ -1,72 +1,41 @@
 package service
 
 import (
-	"time"
-
 	"github.com/ajay-1134/alumni-backend/internal/domain"
 	"github.com/ajay-1134/alumni-backend/internal/dto"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func convertDOB(dob string) time.Time {
-	s := string(dob)
-	s = s[1 : len(s)-1] // remove quotes
-	t, err := time.Parse("2006-01-02", s)
-	if err != nil {
-		return time.Time{}
-	}
-	return t
-}
+// func updateRequestToUser(req *dto.UpdateUserRequest) *domain.User {
 
-func updateRequestToUser(req *dto.UpdateUserRequest) *domain.User {
+// 	user := domain.User{
+// 		FirstName:      req.FirstName,
+// 		LastName:       req.LastName,
+// 		Phone:          req.Phone,
+// 		Gender:         req.Gender,
+// 		DateOfBirth:    *convertDOB(req.DateOfBirth),
+// 		ProfilePicture: req.ProfilePicture,
+// 		Degree:         req.Degree,
+// 		Major:          req.Major,
+// 		CurrentCompany: req.CurrentCompany,
+// 		JobTitle:       req.JobTitle,
+// 		Industry:       req.Industry,
+// 		LinkedInURL:    req.LinkedInURL,
+// 		Website:        req.Website,
+// 		City:           req.City,
+// 		State:          req.City,
+// 		Country:        req.Country,
+// 	}
 
-	user := domain.User{
-		FirstName:      req.FirstName,
-		LastName:       req.LastName,
-		Phone:          req.Phone,
-		Gender:         req.Gender,
-		DateOfBirth:    convertDOB(req.DateOfBirth),
-		ProfilePicture: req.ProfilePicture,
-		Degree:         req.Degree,
-		Major:          req.Major,
-		CurrentCompany: req.CurrentCompany,
-		JobTitle:       req.JobTitle,
-		Industry:       req.Industry,
-		LinkedInURL:    req.LinkedInURL,
-		Website:        req.Website,
-		City:           req.City,
-		State:          req.City,
-		Country:        req.Country,
-	}
-
-	return &user
-}
+// 	return &user
+// }
 
 func registerRequestToUser(req *dto.RegisterRequest) *domain.User {
 
 	user := domain.User{
-		FirstName:      req.FirstName,
-		LastName:       req.LastName,
-		Email:          req.Email,
-		Phone:          req.Phone,
-		Gender:         req.Gender,
-		DateOfBirth:    convertDOB(req.DateOfBirth),
-		ProfilePicture: req.ProfilePicture,
-		EnrollmentYear: req.EnrollmentYear,
-		GraduationYear: req.GraduationYear,
-		Degree:         req.Degree,
-		Major:          req.Major,
-		RollNumber:     &req.RollNumber,
-		CurrentCompany: req.CurrentCompany,
-		JobTitle:       req.JobTitle,
-		Industry:       req.Industry,
-		LinkedInURL:    req.LinkedInURL,
-		Website:        req.Website,
-		City:           req.City,
-		State:          req.City,
-		Country:        req.Country,
-		AuthProvider:   req.AuthProvider,
-		AuthID:         req.AuthID,
+		FirstName: req.FirstName,
+		LastName:  req.LastName,
+		Email:     req.Email,
 	}
 
 	return &user

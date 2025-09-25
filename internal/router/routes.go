@@ -7,8 +7,8 @@ import (
 )
 
 func SetupRoutes(r *gin.Engine, uh *handler.UserHandler) {
-	r.POST("users/register", uh.Register)
-	r.POST("users/login", uh.Login)
+	r.POST("auth/register", uh.Register)
+	r.POST("auth/login", uh.Login)
 
 	r.GET("auth/google/login", uh.GoogleLogin)
 	r.GET("auth/google/callback", uh.GoogleCallback)

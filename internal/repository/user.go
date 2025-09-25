@@ -2,7 +2,7 @@ package repository
 
 import (
 	"github.com/ajay-1134/alumni-backend/internal/domain"
-	"github.com/ajay-1134/alumni-backend/internal/dto"
+	"github.com/ajay-1134/alumni-backend/internal/ports/repository"
 	"gorm.io/gorm"
 )
 
@@ -10,7 +10,7 @@ type userRepository struct {
 	db *gorm.DB
 }
 
-func NewUserRepository(db *gorm.DB) domain.UserRepository {
+func NewUserRepository(db *gorm.DB) repository.UserRepository {
 	return &userRepository{db: db}
 }
 
@@ -18,13 +18,12 @@ func (r *userRepository) Create(user *domain.User) error {
 	return r.db.Create(user).Error
 }
 
-func (r *userRepository) Update(user *domain.User, req *dto.UpdateUserRequest) (*domain.User, error) {
-
-	if err := r.db.Model(&user).Updates(req).Error; err != nil {
-		return nil, err
+func (r *userRepository) Update(user *domain.User, updates *map[string]interface{}) error {
+	if err := r.db.Model(&user).Updates(updates).Error; err != nil {
+		return err
 	}
 
-	return user, nil
+	return nil
 }
 
 func (r *userRepository) FindByEmail(email string) (*domain.User, error) {

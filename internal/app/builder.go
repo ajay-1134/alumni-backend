@@ -6,8 +6,8 @@ import (
 	"github.com/ajay-1134/alumni-backend/internal/router"
 	"github.com/ajay-1134/alumni-backend/internal/service"
 	"github.com/ajay-1134/alumni-backend/pkg/db"
-	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 type Builder struct {
@@ -25,12 +25,12 @@ func (b *Builder) Build(dsn string) *gin.Engine {
 	userService := service.NewUserService(userRepository)
 	userHandler := handler.NewUserHandler(userService)
 
-	// apply CORS before routes
 	b.router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173"},
-		AllowMethods:     []string{"GET", "POST", "PATCH", "DELETE"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		AllowCredentials: true,
+		AllowMethods:     []string{"GET", "POST", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true, // 👈 allow cookies
 	}))
 
 	// now set up routes

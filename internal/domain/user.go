@@ -2,8 +2,6 @@ package domain
 
 import (
 	"time"
-
-	"github.com/ajay-1134/alumni-backend/internal/dto"
 )
 
 type User struct {
@@ -29,7 +27,7 @@ type User struct {
 	CurrentCompany string `gorm:"size:150" json:"current_company"`
 	JobTitle       string `gorm:"size:100" json:"job_title"`
 	Industry       string `gorm:"size:100" json:"industry"`
-	LinkedInURL    string `json:"linkedin_url"`
+	LinkedinURL    string `json:"linkedin_url"`
 	Website        string `json:"website"`
 
 	// Location
@@ -46,23 +44,4 @@ type User struct {
 	AuthID       string `json:"auth_id"`
 
 	Role string `gorm:"size:20;default:user" json:"role"`
-}
-
-type UserRepository interface {
-	Create(user *User) error
-	FindByEmail(email string) (*User, error)
-	FindByID(id uint) (*User, error)
-	Update(user *User, req *dto.UpdateUserRequest) (*User, error)
-	Delete(id uint) error
-	GetAll() ([]*User, error)
-}
-
-type UserService interface {
-	Register(*dto.RegisterRequest) error
-	Login(email string, Password string) (*User, error)
-	UpdateDetails(id uint, req *dto.UpdateUserRequest) (*User, error)
-	DeleteProfile(id uint) error
-	GetAllUsers() ([]*User, error)
-	GetUser(id uint) (*User, error)
-	LoginWithGoogle(googleUser *dto.GoogleUser) (*User, error)
 }

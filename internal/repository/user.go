@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"log"
+
 	"github.com/ajay-1134/alumni-backend/internal/domain"
 	"github.com/ajay-1134/alumni-backend/internal/ports/repository"
 	"gorm.io/gorm"
@@ -27,19 +29,23 @@ func (r *userRepository) Update(user *domain.User, updates *map[string]interface
 }
 
 func (r *userRepository) FindByEmail(email string) (*domain.User, error) {
-	var user domain.User
+	var user *domain.User
 	err := r.db.Where("email = ?", email).First(&user).Error
-	return &user, err
+	if err != nil {
+		log.Printf("error occured while finding user with email %s",email)
+		return nil, err
+	}
+	return user, nil
 }
 
 func (r *userRepository) FindByID(id uint) (*domain.User, error) {
-	var user domain.User
+	var user *domain.User
 	err := r.db.First(&user, id).Error
-	return &user, err
-}
-
-func (r *userRepository) Delete(id uint) error {
-	return r.db.Delete(&domain.User{}, id).Error
+	if err != nil {
+		log.Printf("error occured while finding user with id %v",id)
+		return nil,err
+	}
+	return user, nil
 }
 
 func (r *userRepository) GetAll() ([]*domain.User, error) {
@@ -50,4 +56,8 @@ func (r *userRepository) GetAll() ([]*domain.User, error) {
 	}
 
 	return users, nil
+}
+
+func (r *userRepository) Delete(id uint) error {
+	return r.db.Delete(&domain.User{}, id).Error
 }

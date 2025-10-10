@@ -25,6 +25,10 @@ func (b *Builder) Build(dsn string) *gin.Engine {
 	userService := service.NewUserService(userRepository)
 	userHandler := handler.NewUserHandler(userService)
 
+	postRepository := repository.NewPostRepository(database)
+	postService := service.NewPostService(postRepository)
+	postHandler := handler.NewPostHandler(postService)
+
 	b.router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173"},
 		AllowMethods:     []string{"GET", "POST", "PATCH", "DELETE", "OPTIONS"},
@@ -34,7 +38,8 @@ func (b *Builder) Build(dsn string) *gin.Engine {
 	}))
 
 	// now set up routes
-	router.SetupRoutes(b.router, userHandler)
+	router.SetupRoutesforUser(b.router, userHandler)
+	router.SetupRoutesforPost(b.router, postHandler)
 
 	return b.router
 }

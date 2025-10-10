@@ -10,22 +10,22 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserService struct {
+type userService struct {
 	repo repository.UserRepository
 }
 
 func NewUserService(repo repository.UserRepository) service.UserService {
-	return &UserService{repo: repo}
+	return &userService{repo: repo}
 }
 
-func (s *UserService) Register(req *dto.RegisterRequest) error {
+func (s *userService) Register(req *dto.RegisterRequest) error {
 	hashedPassword, _ := HashPassword(req.Password)
 	u := registerRequestToUser(req)
 	u.PasswordHash = hashedPassword
 	return s.repo.Create(u)
 }
 
-func (s *UserService) Login(email string, password string) (*domain.User, error) {
+func (s *userService) Login(email string, password string) (*domain.User, error) {
 	u, err := s.repo.FindByEmail(email)
 	if err != nil {
 		return nil,err
@@ -39,7 +39,7 @@ func (s *UserService) Login(email string, password string) (*domain.User, error)
 	return u, nil
 }
 
-func (s *UserService) UpdateDetails(userID uint, req *dto.UpdateUserRequest) error {
+func (s *userService) UpdateDetails(userID uint, req *dto.UpdateUserRequest) error {
 	user, err := s.repo.FindByID(userID)
 	if err != nil {
 		return err
@@ -54,7 +54,7 @@ func (s *UserService) UpdateDetails(userID uint, req *dto.UpdateUserRequest) err
 	return nil
 }
 
-func (s *UserService) DeleteProfile(id uint) error {
+func (s *userService) DeleteProfile(id uint) error {
 	_, err := s.repo.FindByID(id)
 	if err != nil {
 		return err
@@ -62,7 +62,7 @@ func (s *UserService) DeleteProfile(id uint) error {
 	return s.repo.Delete(id)
 }
 
-func (s *UserService) GetAllUsers() ([]*dto.UserResponse, error) {
+func (s *userService) GetAllUsers() ([]*dto.UserResponse, error) {
 	users,err := s.repo.GetAll()
 	if err != nil {
 		return nil, err
@@ -75,7 +75,7 @@ func (s *UserService) GetAllUsers() ([]*dto.UserResponse, error) {
 	return resp,nil
 }
 
-func (s *UserService) GetUser(id uint) (*dto.UserResponse, error) {
+func (s *userService) GetUser(id uint) (*dto.UserResponse, error) {
 	user, err := s.repo.FindByID(id)
 	if err != nil {
 		return nil, err
@@ -84,7 +84,7 @@ func (s *UserService) GetUser(id uint) (*dto.UserResponse, error) {
 	return resp,nil
 }
 
-func (s *UserService) LoginWithGoogle(googleUser *dto.GoogleUser) (*domain.User, error) {
+func (s *userService) LoginWithGoogle(googleUser *dto.GoogleUser) (*domain.User, error) {
 	email := googleUser.Email
 	user := googleUserToUser(googleUser)
 	_, err := s.repo.FindByEmail(email)

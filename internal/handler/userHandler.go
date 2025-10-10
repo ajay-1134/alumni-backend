@@ -10,27 +10,28 @@ import (
 
 	"github.com/ajay-1134/alumni-backend/internal/auth"
 	"github.com/ajay-1134/alumni-backend/internal/dto"
+	"github.com/ajay-1134/alumni-backend/internal/ports/handler"
 	"github.com/ajay-1134/alumni-backend/internal/ports/service"
 	"github.com/ajay-1134/alumni-backend/pkg/oauth"
 	"github.com/gin-gonic/gin"
 )
 
-type UserHandler struct {
+type userHandler struct {
 	service service.UserService
 }
 
-func NewUserHandler(service service.UserService) *UserHandler {
-	return &UserHandler{service: service}
+func NewUserHandler(service service.UserService) handler.UserHandler {
+	return &userHandler{service: service}
 }
 
-func (h *UserHandler) Register(c *gin.Context) {
+func (uh *userHandler) Register(c *gin.Context) {
 	var req dto.RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := h.service.Register(&req); err != nil {
+	if err := uh.service.Register(&req); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -38,7 +39,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "user registered"})
 }
 
-func (h *UserHandler) Login(c *gin.Context) {
+func (uh *userHandler) Login(c *gin.Context) {
 	var req struct {
 		Email    string `json:"email" binding:"required,email"`
 		Password string `json:"password" binding:"required"`
@@ -49,7 +50,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	user, err := h.service.Login(req.Email, req.Password)
+	user, err := uh.service.Login(req.Email, req.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
@@ -67,12 +68,12 @@ func (h *UserHandler) Login(c *gin.Context) {
 	})
 }
 
-func (ah *UserHandler) GoogleLogin(c *gin.Context) {
+func (uh *userHandler) GoogleLogin(c *gin.Context) {
 	url := oauth.GetGoogleAuthConfig().AuthCodeURL("randomstate")
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
 
-func (ah *UserHandler) GoogleCallback(c *gin.Context) {
+func (uh *userHandler) GoogleCallback(c *gin.Context) {
 	code := c.Query("code")
 
 	token, err := oauth.GetGoogleAuthConfig().Exchange(context.Background(), code)
@@ -99,7 +100,7 @@ func (ah *UserHandler) GoogleCallback(c *gin.Context) {
 		return
 	}
 
-	user, err := ah.service.LoginWithGoogle(&googleUser)
+	user, err := uh.service.LoginWithGoogle(&googleUser)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -114,8 +115,8 @@ func (ah *UserHandler) GoogleCallback(c *gin.Context) {
 	c.Redirect(http.StatusTemporaryRedirect, "http://localhost:5173/auth/callback?token="+tokenString)
 }
 
-func (h *UserHandler) GetAllUsers(c *gin.Context) {
-	users, err := h.service.GetAllUsers()
+func (uh *userHandler) GetAllUsers(c *gin.Context) {
+	users, err := uh.service.GetAllUsers()
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -125,15 +126,15 @@ func (h *UserHandler) GetAllUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, users)
 }
 
-func (h *UserHandler) GetMyProfile(c *gin.Context) {
-	id, err := getId(c)
+func (uh *userHandler) GetMyProfile(c *gin.Context) {
+	id, err := getUserID(c)
 	if err != nil {
 		log.Printf("error occured in getting the id in the handler")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	fmt.Printf("id while getting user profile: %v\n", id)
-	user, err := h.service.GetUser(id)
+	user, err := uh.service.GetUser(id)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -143,8 +144,8 @@ func (h *UserHandler) GetMyProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-func (h *UserHandler) UpdateUserDetails(c *gin.Context) {
-	id, err := getId(c)
+func (uh *userHandler) UpdateUserDetails(c *gin.Context) {
+	id, err := getUserID(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -158,23 +159,23 @@ func (h *UserHandler) UpdateUserDetails(c *gin.Context) {
 		return
 	}
 
-	err = h.service.UpdateDetails(id, &req)
+	err = uh.service.UpdateDetails(id, &req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message":"user details updated successfully!"})
+	c.JSON(http.StatusOK, gin.H{"message": "user details updated successfully!"})
 }
 
-func (h *UserHandler) DeleteProfile(c *gin.Context) {
-	id, err := getId(c)
+func (uh *userHandler) DeleteProfile(c *gin.Context) {
+	id, err := getUserID(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = h.service.DeleteProfile(id)
+	err = uh.service.DeleteProfile(id)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

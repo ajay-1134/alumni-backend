@@ -43,5 +43,6 @@ type User struct {
 	AuthProvider string `json:"auth_provider"`
 	AuthID       string `json:"auth_id"`
 
-	Role string `gorm:"size:20;default:user" json:"role"`
+	Role  string        `gorm:"size:20;default:user" json:"role"`
+	Posts []Post `json:"posts"`
 }

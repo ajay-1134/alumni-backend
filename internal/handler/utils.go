@@ -36,7 +36,7 @@ func stringToUint(s string) (uint, error) {
 	return uint(val64), nil
 }
 
-func getId(c *gin.Context) (uint, error) {
+func getUserID(c *gin.Context) (uint, error) {
 	id := c.Param("id")
 
 	if id != "" {

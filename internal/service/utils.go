@@ -6,30 +6,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// func updateRequestToUser(req *dto.UpdateUserRequest) *domain.User {
-
-// 	user := domain.User{
-// 		FirstName:      req.FirstName,
-// 		LastName:       req.LastName,
-// 		Phone:          req.Phone,
-// 		Gender:         req.Gender,
-// 		DateOfBirth:    *convertDOB(req.DateOfBirth),
-// 		ProfilePicture: req.ProfilePicture,
-// 		Degree:         req.Degree,
-// 		Major:          req.Major,
-// 		CurrentCompany: req.CurrentCompany,
-// 		JobTitle:       req.JobTitle,
-// 		Industry:       req.Industry,
-// 		LinkedInURL:    req.LinkedInURL,
-// 		Website:        req.Website,
-// 		City:           req.City,
-// 		State:          req.City,
-// 		Country:        req.Country,
-// 	}
-
-// 	return &user
-// }
-
 func registerRequestToUser(req *dto.RegisterRequest) *domain.User {
 
 	user := domain.User{
@@ -57,12 +33,11 @@ func HashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
-
-func buildUpdates(req *dto.UpdateUserRequest) (*map[string]interface{}) {
+func buildUpdates(req *dto.UpdateUserRequest) *map[string]interface{} {
 	updates := make(map[string]interface{})
 
 	if req.FirstName != "" {
-		updates["first_name"] = req.FirstName 
+		updates["first_name"] = req.FirstName
 	}
 	if req.LastName != "" {
 		updates["last_name"] = req.LastName
@@ -122,3 +97,34 @@ func buildUpdates(req *dto.UpdateUserRequest) (*map[string]interface{}) {
 	return &updates
 }
 
+func dtoToPost(postDto *dto.PostDto) *domain.Post {
+	return &domain.Post{
+		ID:       postDto.PostID,
+		UserID:   postDto.UserID,
+		Text:     postDto.Text,
+		ImageURL: postDto.ImageURL,
+		User:     domain.User{},
+	}
+}
+
+func postToDto(post *domain.Post) *dto.PostDto {
+	return &dto.PostDto{
+		PostID:   post.ID,
+		ImageURL: post.ImageURL,
+		Text:     post.Text,
+		UserID:   post.UserID,
+	}
+}
+
+func buildUpdatedPost(post *dto.PostDto) *map[string]interface{} {
+	updatedPost := make(map[string]interface{})
+
+	if post.ImageURL != "" {
+		updatedPost["image_url"] = post.ImageURL
+	}
+	if post.Text != "" {
+		updatedPost["text"] = post.Text
+	}
+
+	return &updatedPost
+}

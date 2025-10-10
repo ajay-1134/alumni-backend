@@ -15,6 +15,7 @@ func ConnnectDB(dsn string) *gorm.DB {
 	}
 
 	database.AutoMigrate(&domain.User{})
+	database.AutoMigrate(&domain.Post{})
 
 	return database
 }

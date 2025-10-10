@@ -1,12 +1,12 @@
 package router
 
 import (
-	"github.com/ajay-1134/alumni-backend/internal/handler"
 	"github.com/ajay-1134/alumni-backend/internal/middleware"
+	"github.com/ajay-1134/alumni-backend/internal/ports/handler"
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRoutes(r *gin.Engine, uh *handler.UserHandler) {
+func SetupRoutesforUser(r *gin.Engine, uh handler.UserHandler) {
 	r.POST("auth/register", uh.Register)
 	r.POST("auth/login", uh.Login)
 
@@ -30,4 +30,16 @@ func SetupRoutes(r *gin.Engine, uh *handler.UserHandler) {
 		adminControl.GET("/:id", uh.GetMyProfile)
 	}
 
+}
+
+func SetupRoutesforPost(r *gin.Engine, ph handler.PostHandler) {
+	userControl := r.Group("feed")
+	userControl.Use(middleware.AuthMiddleware())
+	{
+		userControl.GET("",ph.GetAllPosts)
+		userControl.POST("post",ph.CreatePost)
+		userControl.PATCH("/post/edit/:postID",ph.UpdatePost)
+		userControl.GET("user/posts",ph.GetAllPostsWithUserId)
+		userControl.DELETE("post/delete/:postID",ph.DeletePost)
+	}
 }

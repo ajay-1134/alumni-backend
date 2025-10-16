@@ -43,6 +43,9 @@ type User struct {
 	AuthProvider string `json:"auth_provider"`
 	AuthID       string `json:"auth_id"`
 
-	Role  string        `gorm:"size:20;default:user" json:"role"`
-	Posts []Post `json:"posts"`
+	Role  string `gorm:"size:20;default:user" json:"role"`
+	Posts []Post `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+
+	VerificationStatus string `gorm:"size:100" json:"verification_status"`
+	AccountStatus      string `gorm:"size:100" json:"account_status"`
 }

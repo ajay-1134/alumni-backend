@@ -13,4 +13,6 @@ type UserService interface {
 	GetUser(id uint) (*dto.UserResponse, error)
 	UpdateDetails(id uint, req *dto.UpdateUserRequest) error
 	DeleteProfile(id uint) error
+	UserCount() (*int64,error)
+	VerifiedUsersCount() (*int64,error)
 }

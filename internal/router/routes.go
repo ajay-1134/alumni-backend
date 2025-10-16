@@ -28,6 +28,13 @@ func SetupRoutesforUser(r *gin.Engine, uh handler.UserHandler) {
 		adminControl.PATCH("update/:id", uh.UpdateUserDetails)
 		adminControl.DELETE("delete/:id", uh.DeleteProfile)
 		adminControl.GET("/:id", uh.GetMyProfile)
+		adminControl.GET("totalUsers",uh.GetTotalUserCount)
+		adminControl.GET("pendingVerifications",uh.GetTotalVerifiedUsersCount)
+		// adminControl.GET("activeUsers",)
+		// adminControl.PATCH("approveOrReject")
+		// adminControl.PATCH("banUser")
+		// adminControl.PATCH("unBanUser")
+		// adminControl.POST("sendAnnouncement")
 	}
 
 }

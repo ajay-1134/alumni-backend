@@ -11,4 +11,6 @@ type UserHandler interface {
 	GetMyProfile(c *gin.Context)
 	UpdateUserDetails(c *gin.Context)
 	DeleteProfile(c *gin.Context)
+	GetTotalUserCount(c *gin.Context)
+	GetTotalVerifiedUsersCount(c *gin.Context)
 }

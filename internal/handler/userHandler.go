@@ -184,3 +184,23 @@ func (uh *userHandler) DeleteProfile(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "user profile deleted successfully"})
 }
+
+func(uh *userHandler) GetTotalUserCount(c *gin.Context) {
+	totalUsers, err := uh.service.UserCount()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError,gin.H{"error" : err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK,&totalUsers)
+}
+
+func(uh *userHandler) GetTotalVerifiedUsersCount(c *gin.Context) {
+	totalVerifiedUsers, err := uh.service.VerifiedUsersCount()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError,gin.H{"error" : err.Error()})
+		return 
+	}
+
+	c.JSON(http.StatusOK,&totalVerifiedUsers)
+}

@@ -102,3 +102,11 @@ func (s *userService) LoginWithGoogle(googleUser *dto.GoogleUser) (*domain.User,
 
 	return u, nil
 }
+
+func (s *userService) UserCount() (*int64, error) {
+	return s.repo.UserCount()
+}
+
+func (s *userService) VerifiedUsersCount() (*int64,error) {
+	return s.repo.VerifiedUsersCount()
+}

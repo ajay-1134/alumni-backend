@@ -9,4 +9,6 @@ type UserRepository interface {
 	GetAll() ([]*domain.User, error)
 	Update(user *domain.User, updates *map[string]interface{}) error
 	Delete(id uint) error
+	UserCount() (*int64,error)
+	VerifiedUsersCount() (*int64,error)
 }

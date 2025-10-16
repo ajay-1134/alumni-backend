@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -12,6 +11,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"github.com/ajay-1134/alumni-backend/internal/constants"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/api/option"
 )
@@ -60,11 +60,7 @@ func getUserID(c *gin.Context) (uint, error) {
 	return userId.(uint), nil
 }
 
-const (
-	bucketName = "aura-poc-bucket"
-)
-
-func getImageUrl(c *gin.Context) (string, error) {
+func uploadImage(c *gin.Context) (string, error) {
 	file, err := c.FormFile("image")
 	if err != nil {
 		log.Printf("image file is not provided")
@@ -87,7 +83,7 @@ func getImageUrl(c *gin.Context) (string, error) {
 	defer client.Close()
 
 	objectName := fmt.Sprintf("uploads/%d_%s", time.Now().UnixNano(), file.Filename)
-	wc := client.Bucket(bucketName).Object(objectName).NewWriter(ctx)
+	wc := client.Bucket(constants.BucketName).Object(objectName).NewWriter(ctx)
 	wc.ContentType = file.Header.Get("Content-Type")
 
 	if _, err := io.Copy(wc, src); err != nil {
@@ -99,74 +95,5 @@ func getImageUrl(c *gin.Context) (string, error) {
 		return "", err
 	}
 
-	signedURL, err := generateSignedURL(objectName)
-	if err != nil {
-		log.Printf("error occured in generating signed url")
-		return "", err
-	}
-
-	return signedURL, nil
-}
-
-func generateSignedURL(objectName string) (string, error) {
-	serviceAccount := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
-
-	googleAccessID,err := extractClientEmail(serviceAccount)
-	if err != nil {
-		return "",err
-	}
-
-	privateKey,err := extractPrivateKey(serviceAccount)
-	if err != nil {
-		return "",err
-	}
-
-	url, err := storage.SignedURL(bucketName, objectName, &storage.SignedURLOptions{
-		Method:         "GET",
-		Expires:        time.Now().Add(1 * time.Hour),
-		GoogleAccessID: googleAccessID,
-		PrivateKey:     privateKey,
-	})
-
-	return url, err
-}
-
-type ServiceAccount struct {
-	ClientEmail string `json:"client_email"`
-	PrivateKey  string `json:"private_key"`
-}
-
-func extractClientEmail(path string) (string, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		log.Printf("error occured in reading credential file")
-		return "", err
-	}
-
-	var sa ServiceAccount
-
-	err = json.Unmarshal(data, &sa)
-	if err != nil {
-		log.Printf("error occured in unmarshalling json file")
-		return "", err
-	}
-
-	return sa.ClientEmail, nil
-}
-
-func extractPrivateKey(path string) ([]byte, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		log.Printf("error occured in reading credential file")
-		return nil, err
-	}
-
-	var sa ServiceAccount
-	err = json.Unmarshal(data, &sa)
-	if err != nil {
-		log.Printf("error occured in unmarshalling json file")
-		return nil, err
-	}
-
-	return []byte(sa.PrivateKey), nil
+	return objectName, nil
 }

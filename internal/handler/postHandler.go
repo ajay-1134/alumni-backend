@@ -26,7 +26,7 @@ func (ph *postHandler) CreatePost(c *gin.Context) {
 		return
 	}
 
-	imageUrl, err := getImageUrl(c)
+	imageUrl, err := uploadImage(c)
 	if err != nil {
 		log.Printf("error occured in processing image")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -81,7 +81,7 @@ func (ph *postHandler) UpdatePost(c *gin.Context) {
 	id := c.Param("postID")
 	postID, _ := stringToUint(id)
 
-	imageUrl, err := getImageUrl(c)
+	imageUrl, err := uploadImage(c)
 	if err != nil {
 		log.Printf("error occured in processing image")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

@@ -61,3 +61,28 @@ func (r *userRepository) GetAll() ([]*domain.User, error) {
 func (r *userRepository) Delete(id uint) error {
 	return r.db.Delete(&domain.User{}, id).Error
 }
+
+func (r *userRepository) UserCount() (*int64, error) {
+	var totalUsers int64
+
+	err := r.db.Model(&domain.User{}).Count(&totalUsers).Error
+	if err != nil {
+		log.Printf("failed to count total users")
+		return nil,err
+	}
+	return &totalUsers,nil
+}
+
+func (r *userRepository) VerifiedUsersCount() (*int64, error) {
+	var totalVerifiedUsers int64
+
+	err := r.db.Where("verification_status = ?", "verified").Model(&domain.User{}).Count(&totalVerifiedUsers).Error
+	if err != nil {
+		log.Printf("failed to count verified users")
+		return nil,err
+	}
+
+	return &totalVerifiedUsers,nil
+}
+
+
